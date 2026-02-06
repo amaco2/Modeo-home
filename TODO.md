@@ -1,0 +1,3 @@
+- [x] Edit Connexion.html to wrap the form in a div with class "auth-form"
+- [x] Edit Inscription.html to wrap the form in a div with class "auth-form"
+- [x] Edit main.css to add styles for .auth-form

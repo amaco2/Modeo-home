@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr" role="document" title="Modeo - Produits">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modeo - Produits</title>
+  <meta name="description" content="Parcourez la collection Modeo : maison, mode et tech. Filtrez et trouvez vos favoris.">
+  <meta name="keywords" content="produits, Modeo, maison, mode, tech">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://modeo.example/products.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Modeo - Produits">
+  <meta property="og:description" content="Parcourez la collection Modeo : maison, mode et tech.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=60">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/main.css">
+      <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  integrity="sha512-..."
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"CollectionPage","name":"Modeo - Produits","description":"Catalogue de produits Modeo."}
+  </script>
+</head>
+
+<body>
+  <header role="banner">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="index.html">Modeo</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i></a></li>
+            <li class="nav-item"><a class="nav-link active" href="Products.html"><i class="fa-solid fa-box"></i></a></li>
+            <li class="nav-item ms-3">
+              <button class="btn btn-outline-primary position-relative" id="cart-btn">
+                <i class="fa-solid fa-basket-shopping"></i> <span class="badge bg-primary ms-2" id="cart-count">0</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="py-5" role="main">
+    <div class="container">
+      <div class="row mb-4 align-items-center">
+        <div class="col-md-4">
+          <h2 class="h4 mb-0">Tous les produits</h2>
+        </div>
+        <div class="col-md-8">
+          <div class="d-flex gap-2 justify-content-md-end">
+            <input id="search" class="form-control w-50" placeholder="Rechercher...">
+            <select id="category" class="form-select w-25">
+              <option value="all">Toutes catégories</option>
+              <option value="home">Maison</option>
+              <option value="fashion">Mode</option>
+              <option value="tech">Tech</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="product-list" class="row g-4">
+        <!-- produits injectés par JS -->
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4" role="contentinfo">
+    <div class="container d-flex justify-content-between small text-muted">
+      <div>© 2026 Modeo</div>
+      <div>Contact • Aide</div>
+    </div>
+  </footer>
+
+  <!-- Cart Modal -->
+  <div class="modal fade" id="cartModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-end modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Votre panier</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cart-items">
+            <!-- items injected by JS -->
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-between align-items-center">
+          <div class="fw-bold">Total: <span id="cart-total">€0.00</span></div>
+          <div>
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Continuer mes achats</button>
+            <button type="button" class="btn btn-primary">Passer à la caisse</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<footer class="py-4" role="contentinfo">
+        <div class="container text-white">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="fw-bold">Modeo</h5>
+                    <p class="small text-white">Collections sélectionnées, navigation simple et design élégant inspiré par les meilleures boutiques en ligne.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-white me-5"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-5"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-5"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <h6 class="text-white fw-bold">Navigation</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="index.html" class="text-white text-decoration-none">Accueil</a></li>
+                        <li><a href="Products.html" class="text-white text-decoration-none">Produits</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">À propos</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <h6 class="fw-bold">Support</h6>
+                    <ul class="list-unstyled large fw-bold ">
+                        <li><a href="#" class="text-white text-decoration-none">FAQ</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Livraison</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Retours</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Service client</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6 class="fw-bold">Newsletter</h6>
+                    <p class="large text-white">Restez informé de nos dernières collections et offres exclusives.</p>
+                    <form class="d-flex">
+                        <input type="email" class="form-control form-control-sm me-2" placeholder="Votre email" aria-label="Email">
+                        <button class="btn btn-primary btn-sm" type="submit">S'abonner</button>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="d-flex justify-content-between align-items-center small text-white">
+                <div>© 2026 Modeo. Tous droits réservés.</div>
+                <div>
+                    <a href="#" class="text-white fw-bold text-decoration-none me-3">Mentions légales</a>
+                    <a href="#" class="text-white fw-bold text-decoration-none me-3">Politique de confidentialité</a>
+                    <a href="#" class="text-white fw-bold text-decoration-none">Conditions générales</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../JS/app.js"></script>
+</body>
+
+</html>

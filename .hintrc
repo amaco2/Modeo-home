@@ -1,0 +1,36 @@
+{
+  "extends": [
+    "development"
+  ],
+  "hints": {
+    "axe/forms": [
+      "default",
+      {
+        "label": "off",
+        "select-name": "off"
+      }
+    ],
+    "axe/name-role-value": [
+      "default",
+      {
+        "button-name": "off",
+        "link-name": "off"
+      }
+    ],
+    "button-type": "off",
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "video[playsinline]"
+        ]
+      }
+    ],
+    "axe/keyboard": [
+      "default",
+      {
+        "nested-interactive": "off"
+      }
+    ]
+  }
+}
