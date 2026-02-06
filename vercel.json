@@ -1,8 +1,12 @@
 {
-    "rewrites": [
+    "routes": [
         {
-            "source": "/(.*)",
-            "destination": "/src/HTML/index.html"
+            "src": "/(.*)",
+            "dest": "/src/HTML/index.html" 
+        },
+        {
+            "src": "/CSS|JS|asset/(.*)",
+            "dest": "src/$1/$2"
         }
     ]
 }
