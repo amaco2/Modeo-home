@@ -2,11 +2,7 @@
     "routes": [
         {
             "source": "/(.*)",
-            "destination": "/src/HTML/index.html"
-        },
-        {
-            "source": "/CSS|JS|asset/(.*)",
-            "destination": "src/$1/$2"
+            "destination": "/src/HTML/"
         }
     ]
 }
