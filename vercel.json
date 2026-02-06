@@ -1,8 +1,12 @@
 {
     "rewrites": [
         {
-            "source": "/src/",
-            "destination": "/src/HTML/index.hmtl"
+            "source": "^/$",
+            "destination": "/src/HTML/index.html"
+        },
+        {
+            "source": "/CSS|JS|asset/(.*)",
+            "destination": "src/$1/$1"
         }
     ]
 }
