@@ -1,12 +1,30 @@
 {
+    "buildCommand": "echo 'Build complete'",
+    "outputDirectory": "src",
     "routes": [
         {
-            "src": "/(.*)",
-            "dest": "/src/HTML/index.html" 
+            "src": "/CSS/(.*)",
+            "dest": "/CSS/$1"
         },
         {
-            "src": "/CSS|JS|asset/(.*)",
-            "dest": "src/$1/$2"
+            "src": "/JS/(.*)",
+            "dest": "/JS/$1"
+        },
+        {
+            "src": "/asset/(.*)",
+            "dest": "/asset/$1"
+        },
+        {
+            "src": "/(.*)\\.html$",
+            "dest": "/HTML/$1.html"
+        },
+        {
+            "src": "/",
+            "dest": "/HTML/index.html"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/HTML/$1.html"
         }
     ]
 }
