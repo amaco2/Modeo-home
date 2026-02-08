@@ -1,136 +1,179 @@
-// Carousel functionality for home page
-class Carousel
+// Scrollable carousel with pointer drag + buttons
+class CarouselScroller
 {
-    constructor( containerSelector, options = {} )
+    constructor( container )
     {
-        this.container = document.querySelector( containerSelector );
-        if ( !this.container ) return;
+        this.container = container;
+        this.track = this.container.querySelector( '.carousel-track' );
+        if ( !this.track ) return;
 
-        this.slides = this.container.querySelectorAll( '.carousel-slide' );
-        this.currentIndex = 0;
-        this.autoScroll = options.autoScroll !== false;
-        this.intervalTime = options.intervalTime || 5000;
-        this.interval = null;
+        this.items = Array.from( this.track.querySelectorAll( '.carousel-card' ) );
 
-        this.init();
+        const section = this.container.closest( '.carousel-section' );
+        this.prevBtn = section ? section.querySelector( '.carousel-prev' ) : null;
+        this.nextBtn = section ? section.querySelector( '.carousel-next' ) : null;
+
+        this.isDown = false;
+        this.startX = 0;
+        this.startScrollLeft = 0;
+        this.rafId = null;
+
+        this.bindEvents();
+        this.updateCenter();
     }
 
-    init()
+    getScrollAmount()
     {
-        this.showSlide( this.currentIndex );
-        this.addEventListeners();
-        if ( this.autoScroll )
+        const item = this.track.querySelector( '.carousel-card' );
+        if ( !item )
         {
-            this.startAutoScroll();
+            return this.container.clientWidth * 0.8;
         }
+
+        const itemWidth = item.getBoundingClientRect().width;
+        const styles = window.getComputedStyle( this.track );
+        const gap = parseFloat( styles.gap || '0' );
+        return itemWidth + gap;
     }
 
-    showSlide( index )
+    scrollByAmount( amount )
     {
-        this.slides.forEach( ( slide, i ) =>
+        this.track.scrollBy( { left: amount, behavior: 'smooth' } );
+    }
+
+    scrollNext()
+    {
+        this.scrollByAmount( this.getScrollAmount() );
+    }
+
+    scrollPrev()
+    {
+        this.scrollByAmount( -this.getScrollAmount() );
+    }
+
+    onPointerDown( e )
+    {
+        this.isDown = true;
+        this.track.classList.add( 'is-dragging' );
+        this.startX = e.pageX;
+        this.startScrollLeft = this.track.scrollLeft;
+        this.track.setPointerCapture( e.pointerId );
+    }
+
+    onPointerMove( e )
+    {
+        if ( !this.isDown ) return;
+        const walk = ( e.pageX - this.startX );
+        this.track.scrollLeft = this.startScrollLeft - walk;
+    }
+
+    onPointerUp( e )
+    {
+        this.isDown = false;
+        this.track.classList.remove( 'is-dragging' );
+        this.track.releasePointerCapture( e.pointerId );
+    }
+
+    bindEvents()
+    {
+        if ( this.prevBtn )
         {
-            slide.style.display = i === index ? 'block' : 'none';
-        } );
-    }
-
-    nextSlide()
-    {
-        this.currentIndex = ( this.currentIndex + 1 ) % this.slides.length;
-        this.showSlide( this.currentIndex );
-    }
-
-    prevSlide()
-    {
-        this.currentIndex = ( this.currentIndex - 1 + this.slides.length ) % this.slides.length;
-        this.showSlide( this.currentIndex );
-    }
-
-    goToSlide( index )
-    {
-        this.currentIndex = index;
-        this.showSlide( this.currentIndex );
-    }
-
-    startAutoScroll()
-    {
-        this.interval = setInterval( () =>
-        {
-            this.nextSlide();
-        }, this.intervalTime );
-    }
-
-    stopAutoScroll()
-    {
-        if ( this.interval )
-        {
-            clearInterval( this.interval );
-            this.interval = null;
+            this.prevBtn.addEventListener( 'click', () => this.scrollPrev() );
         }
-    }
 
-    addEventListeners()
-    {
-        // Touch events for swipe
-        let startX = 0;
-        let endX = 0;
-
-        this.container.addEventListener( 'touchstart', ( e ) =>
+        if ( this.nextBtn )
         {
-            startX = e.touches[ 0 ].clientX;
-            this.stopAutoScroll();
-        } );
+            this.nextBtn.addEventListener( 'click', () => this.scrollNext() );
+        }
 
-        this.container.addEventListener( 'touchend', ( e ) =>
+        if ( window.PointerEvent )
         {
-            endX = e.changedTouches[ 0 ].clientX;
-            this.handleSwipe( startX, endX );
-            if ( this.autoScroll )
+            this.track.addEventListener( 'pointerdown', ( e ) => this.onPointerDown( e ) );
+            this.track.addEventListener( 'pointermove', ( e ) => this.onPointerMove( e ) );
+            this.track.addEventListener( 'pointerup', ( e ) => this.onPointerUp( e ) );
+            this.track.addEventListener( 'pointerleave', ( e ) => this.onPointerUp( e ) );
+        } else
+        {
+            let startX = 0;
+            let startScrollLeft = 0;
+
+            this.track.addEventListener( 'touchstart', ( e ) =>
             {
-                this.startAutoScroll();
+                startX = e.touches[ 0 ].pageX;
+                startScrollLeft = this.track.scrollLeft;
+            }, { passive: true } );
+
+            this.track.addEventListener( 'touchmove', ( e ) =>
+            {
+                const walk = ( e.touches[ 0 ].pageX - startX );
+                this.track.scrollLeft = startScrollLeft - walk;
+            }, { passive: true } );
+
+            this.track.addEventListener( 'mousedown', ( e ) =>
+            {
+                this.isDown = true;
+                this.startX = e.pageX;
+                this.startScrollLeft = this.track.scrollLeft;
+            } );
+
+            window.addEventListener( 'mouseup', () =>
+            {
+                this.isDown = false;
+            } );
+
+            window.addEventListener( 'mousemove', ( e ) =>
+            {
+                if ( !this.isDown ) return;
+                const walk = ( e.pageX - this.startX );
+                this.track.scrollLeft = this.startScrollLeft - walk;
+            } );
+        }
+
+        this.track.addEventListener( 'scroll', () => this.scheduleCenterUpdate() );
+        window.addEventListener( 'resize', () => this.scheduleCenterUpdate() );
+    }
+
+    scheduleCenterUpdate()
+    {
+        if ( this.rafId ) return;
+        this.rafId = window.requestAnimationFrame( () =>
+        {
+            this.rafId = null;
+            this.updateCenter();
+        } );
+    }
+
+    updateCenter()
+    {
+        if ( !this.items.length ) return;
+        const trackRect = this.track.getBoundingClientRect();
+        const centerX = trackRect.left + ( trackRect.width / 2 );
+        let closest = null;
+        let closestDistance = Infinity;
+
+        this.items.forEach( item =>
+        {
+            const rect = item.getBoundingClientRect();
+            const itemCenter = rect.left + ( rect.width / 2 );
+            const distance = Math.abs( itemCenter - centerX );
+            if ( distance < closestDistance )
+            {
+                closestDistance = distance;
+                closest = item;
             }
         } );
 
-        // Mouse events for desktop
-        this.container.addEventListener( 'mousedown', ( e ) =>
+        this.items.forEach( item =>
         {
-            startX = e.clientX;
-            this.stopAutoScroll();
+            item.classList.toggle( 'is-center', item === closest );
         } );
-
-        this.container.addEventListener( 'mouseup', ( e ) =>
-        {
-            endX = e.clientX;
-            this.handleSwipe( startX, endX );
-            if ( this.autoScroll )
-            {
-                this.startAutoScroll();
-            }
-        } );
-    }
-
-    handleSwipe( startX, endX )
-    {
-        const diff = startX - endX;
-        const threshold = 50;
-
-        if ( Math.abs( diff ) > threshold )
-        {
-            if ( diff > 0 )
-            {
-                this.nextSlide();
-            } else
-            {
-                this.prevSlide();
-            }
-        }
     }
 }
 
-// Initialize carousel on home page
 document.addEventListener( 'DOMContentLoaded', function ()
 {
-    // if ( document.body.classList.contains( 'home-page' ) )
-    // {
-    new Carousel( '.carousel-container' );
-    // }
+    document.querySelectorAll( '.carousel-container' ).forEach( container =>
+    {
+        new CarouselScroller( container );
+    } );
 } );

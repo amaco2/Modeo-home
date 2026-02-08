@@ -18,7 +18,7 @@ const useConnexion = ( response ) =>
         throw new Error( "Utilisateur non reconu" );
     }
 
-    console.log( "text", email )
+    console.log( "text", email );
 
 
     if ( isConnect )

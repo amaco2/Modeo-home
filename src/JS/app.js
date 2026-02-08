@@ -1,6 +1,6 @@
 class Product
 {
-    constructor( id, name, price, image, category, desc )
+    constructor( id, name, price, image, category, desc, flags = {} )
     {
         this.id = id;
         this.name = name;
@@ -8,6 +8,11 @@ class Product
         this.image = image;
         this.category = category;
         this.desc = desc;
+        this.flags = {
+            isNew: Boolean( flags.isNew ),
+            isBest: Boolean( flags.isBest ),
+            isPromo: Boolean( flags.isPromo )
+        };
     }
 }
 
@@ -47,12 +52,31 @@ class ProductList
               <div class="text-muted small">${ p.category }</div>
             </div>
             <div class="mt-auto d-flex justify-content-between align-items-center">
-              <div class="price">€${ Number( p.price ) }</div>
+              <div class="price">€${ Number( p.price ).toFixed( 2 ) }</div>
               <button class="btn btn-sm btn-outline-primary add-to-cart" data-id="${ p.id }">Ajouter</button>
             </div>
           </div>
         </div>
       </div>
+    `;
+    }
+
+    cardHtmlCompact( p )
+    {
+        return `
+      <article class="carousel-card card card-product">
+        <img src="${ p.image }" class="card-img-top" alt="${ p.name }">
+        <div class="card-body d-flex flex-column">
+          <div class="mb-2">
+            <div class="product-title">${ p.name }</div>
+            <div class="text-muted small">${ p.category }</div>
+          </div>
+          <div class="mt-auto d-flex justify-content-between align-items-center">
+            <div class="price">€${ Number( p.price ).toFixed( 2 ) }</div>
+            <button class="btn btn-sm btn-outline-primary add-to-cart" data-id="${ p.id }">Ajouter</button>
+          </div>
+        </div>
+      </article>
     `;
     }
 }
@@ -116,14 +140,14 @@ class Cart
 ( function ()
 {
     const sample = [
-        new Product( 1, 'Bougie parfumée', '12.00', 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=60', 'home', 'Bougie naturelle' ),
-        new Product( 2, 'Tasse céramique', '18.50', 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=60', 'home', 'Tasse artisanale' ),
-        new Product( 3, 'Sweat à capuche', '49.99', 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=60', 'fashion', 'Confort quotidien' ),
-        new Product( 4, 'Casque Bluetooth', '89.00', 'https://images.unsplash.com/photo-1518447025370-9f0c9d267b1f?auto=format&fit=crop&w=800&q=60', 'tech', 'Audio sans fil' ),
-        new Product( 5, 'Lampe design', '59.00', 'https://images.unsplash.com/photo-1505691723518-36a2a22e17f6?auto=format&fit=crop&w=800&q=60', 'home', 'Éclairage moderne' ),
-        new Product( 6, 'Sac en cuir', '120.00', 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=60', 'fashion', 'Sac premium' ),
-        new Product( 7, 'Clavier mécanique', '99.00', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=60', 'tech', 'Pour productivité' ),
-        new Product( 8, 'Plaid doux', '34.00', 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=60', 'home', 'Chaleur et confort' )
+        new Product( 1, 'Bougie parfumée', '12.00', 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=60', 'home', 'Bougie naturelle', { isNew: true, isPromo: true } ),
+        new Product( 2, 'Tasse céramique', '18.50', 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=60', 'home', 'Tasse artisanale', { isNew: true } ),
+        new Product( 3, 'Sweat à capuche', '49.99', 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=60', 'fashion', 'Confort quotidien', { isBest: true } ),
+        new Product( 4, 'Casque Bluetooth', '89.00', 'https://images.unsplash.com/photo-1518447025370-9f0c9d267b1f?auto=format&fit=crop&w=800&q=60', 'tech', 'Audio sans fil', { isBest: true } ),
+        new Product( 5, 'Lampe design', '59.00', 'https://images.unsplash.com/photo-1505691723518-36a2a22e17f6?auto=format&fit=crop&w=800&q=60', 'home', 'Éclairage moderne', { isNew: true } ),
+        new Product( 6, 'Sac en cuir', '120.00', 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=60', 'fashion', 'Sac premium', { isBest: true } ),
+        new Product( 7, 'Clavier mécanique', '99.00', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=60', 'tech', 'Pour productivité', { isNew: true } ),
+        new Product( 8, 'Plaid doux', '34.00', 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=60', 'home', 'Chaleur et confort', { isPromo: true } )
     ];
 
     const list = new ProductList( sample );
@@ -134,7 +158,38 @@ class Cart
         // Home featured
         if ( document.getElementById( 'featured-products' ) )
         {
-            list.renderGrid( '#featured-products', sample.slice( 0, 4 ) );
+            const filterButtons = document.querySelectorAll( '[data-featured-filter]' );
+
+            const getFeaturedItems = ( key ) =>
+            {
+                if ( key === 'best' )
+                {
+                    return sample.filter( p => p.flags.isBest );
+                }
+                if ( key === 'promo' )
+                {
+                    return sample.filter( p => p.flags.isPromo );
+                }
+                return sample.filter( p => p.flags.isNew );
+            };
+
+            const renderFeatured = ( key ) =>
+            {
+                const items = getFeaturedItems( key );
+                list.renderGrid( '#featured-products', items.length ? items.slice( 0, 4 ) : sample.slice( 0, 4 ) );
+            };
+
+            filterButtons.forEach( btn =>
+            {
+                btn.addEventListener( 'click', () =>
+                {
+                    filterButtons.forEach( b => b.classList.remove( 'is-active' ) );
+                    btn.classList.add( 'is-active' );
+                    renderFeatured( btn.dataset.featuredFilter );
+                } );
+            } );
+
+            renderFeatured( 'new' );
         }
 
         // Products page
@@ -152,6 +207,8 @@ class Cart
             document.getElementById( 'category' ).addEventListener( 'change', render );
             render();
         }
+
+        // Home carousel: keep HTML fallback content
 
         // Event delegation for add-to-cart
         document.body.addEventListener( 'click', ( e ) =>

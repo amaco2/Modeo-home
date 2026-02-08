@@ -1,47 +1,47 @@
 import { Connexion } from "./Class.js";
 import { URL } from "../URL/Url.js";
 
-class SubmitData
+const setLoading = ( btn, isLoading ) =>
 {
-    constructor( formElement )
+    if ( !btn ) return;
+    if ( isLoading )
     {
-        this._formElement = formElement;
-    }
-    connexion()
+        btn.dataset.originalText = btn.textContent;
+        btn.textContent = "Connexion...";
+        btn.classList.add( "is-loading" );
+        btn.disabled = true;
+    } else
     {
-        let email = "";
-        let password = "";
-
-        for ( const input of this._formElement )
-        {
-            if ( input.name === "email" ) email = input.value;
-            if ( input.name === "password" ) password = input.value;
-        }
-
-        if ( !email || !password ) return null;
-        let cnn = null;
-        if ( email || password )
-        {
-            cnn = new Connexion( email, password );
-            console.log( cnn.infosUi() );
-
-        }
-        if ( cnn ) return ( cnn.infosUi() );
+        btn.textContent = btn.dataset.originalText || "Se connecter";
+        btn.classList.remove( "is-loading" );
+        btn.disabled = false;
     }
-}
+};
 
 const connexion = () =>
 {
-    const data = document.querySelectorAll( "#form-connexion input" );
     const form = document.querySelector( "#form-connexion" );
-    const cnn = new SubmitData( data );
+    if ( !form ) return;
+
+    const submitBtn = form.querySelector( 'button[type="submit"]' );
+    const errorEl = form.querySelector( ".form-error" );
 
     form.addEventListener( "submit", async ( e ) =>
     {
         e.preventDefault();
+        if ( errorEl ) errorEl.textContent = "";
 
-        const payload = cnn.connexion();
-        if ( !payload ) return;
+        form.classList.add( "was-validated" );
+        if ( !form.checkValidity() ) return;
+
+        const email = form.querySelector( "#email-login" )?.value || "";
+        const password = form.querySelector( "#password-login" )?.value || "";
+        if ( !email || !password ) return;
+
+        const payload = new Connexion( email, password ).infosUi();
+
+        setLoading( submitBtn, true );
+        form.setAttribute( "aria-busy", "true" );
 
         try
         {
@@ -54,14 +54,20 @@ const connexion = () =>
                 body: JSON.stringify( payload )
             } );
 
-            const data = await res.json();
-            console.log( "data", data );
-
+            if ( !res.ok )
+            {
+                throw new Error( "Connexion impossible. Vérifiez vos identifiants." );
+            }
+            await res.json();
         } catch ( err )
         {
-            console.error( err.message );
+            if ( errorEl ) errorEl.textContent = err.message || "Une erreur est survenue.";
+        } finally
+        {
+            setLoading( submitBtn, false );
+            form.removeAttribute( "aria-busy" );
         }
     } );
+};
 
-}
 connexion();
